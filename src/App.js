@@ -1,24 +1,38 @@
-import logo from './logo.svg';
 import './App.css';
+import {TasksProvider} from "./TasksContext";
+import TaskList from "./TaskList";
+import AddTask from "./AddTask";
+import {Link, Route, Routes} from "react-router-dom";
+import {Home} from "./Home";
+import {BookList} from "./BookList";
+import {TemplateList} from "./template/listing/TemplateList";
+import {Template} from "./template/detail/Template";
+
+// function App() {
+//   return (
+//     <TasksProvider>
+//       <h1>Day off in Kyoto</h1>
+//       <AddTask/>
+//       <TaskList/>
+//     </TasksProvider>
+//   );
+// }
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <nav>
+        <ul>
+          <li><Link to="/">Home</Link></li>
+          <li><Link to="/templates">Template</Link></li>
+        </ul>
+      </nav>
+      <Routes>
+        <Route path="/" element={<Home/>}/>
+        <Route path="/templates" element={<TemplateList/>}/>
+        <Route path="/templates/:code" element={<Template />} />
+      </Routes>
+    </>
   );
 }
 
