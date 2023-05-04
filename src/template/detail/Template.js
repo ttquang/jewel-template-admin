@@ -4,6 +4,7 @@ import axios from "axios";
 import {v4 as uuid} from 'uuid';
 import TemplateInfo from "./TemplateInfo";
 import {Element} from "./Element";
+import {Button} from "@mui/material";
 
 export function Template() {
   const [loading, setLoading] = useState(true);
@@ -17,9 +18,12 @@ export function Template() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const {data: response} = await axios.get('http://localhost:8080/templates/' + code);
+        const {data: response} = await axios.get('http://192.168.1.24:8080/templates/' + code);
         setName(response.name);
-        setElements(response.elements);
+
+        setElements(response.elements.map(element => {
+          return {...element, id: uuid()};
+        }));
       } catch (error) {
         console.error(error.message);
       }
@@ -29,28 +33,48 @@ export function Template() {
     fetchData();
   }, []);
 
+  function handleSaveElement(updateElement) {
+    return setElements(elements.map(element => {
+      if (element.id === updateElement.id) {
+        return updateElement;
+      } else {
+        return element;
+      }
+    }));
+  }
+
+  function handleAdd() {
+    return setElements([...elements, {
+      id: uuid(), type: "", parameters: []
+    }]);
+  }
+
   return (
     <>
       <TemplateInfo inName={name} handleChange={(e) => setName(e.target.value)}/>
       <ul>
         {elements.map(element => (
-          <li key={uuid()}>
-            <Element inElement={element}/>
+          <li key={element.id}>
+            <Element inElement={element}
+                     handleSave={handleSaveElement}
+              // handleAdd={handleAdd}
+            />
           </li>
         ))}
       </ul>
-      <button onClick={() => {
+
+      <Button variant="contained" onClick={() => {
         createTemplate(code, name, elements);
         navigate("/templates");
-      }}>Save
-      </button>
+      }}>Save</Button>
+      <Button variant="contained" onClick={handleAdd}>Add</Button>
     </>
   )
 }
 
 function createTemplate(code, name, elements) {
   axios
-    .put('http://localhost:8080/templates', {
+    .put('http://192.168.1.24:8080/templates', {
       name: name,
       code: code,
       elements: elements

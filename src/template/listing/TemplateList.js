@@ -11,7 +11,7 @@ export function TemplateList() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const {data: response} = await axios.get('http://localhost:8080/templates');
+        const {data: response} = await axios.get('http://192.168.1.24:8080/templates');
         setTemplates(response);
       } catch (error) {
         console.error(error.message);
@@ -28,11 +28,6 @@ export function TemplateList() {
         {templates.map(template => (
           <li key={uuid()}>
             <Link to={"/templates/" + template.code}>{template.name}</Link>
-            <ul>
-              {template.elements.map(element => (
-                <li key={uuid()}>{element.type}</li>
-              ))}
-            </ul>
           </li>
         ))}
       </ul>
