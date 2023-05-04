@@ -27,10 +27,10 @@ export function TemplateList() {
       <ul>
         {templates.map(template => (
           <li key={uuid()}>
-            <Link to={"/templates/" + template.name}>{template.name}</Link>
+            <Link to={"/templates/" + template.code}>{template.name}</Link>
             <ul>
               {template.elements.map(element => (
-                <li>{element.type}</li>
+                <li key={uuid()}>{element.type}</li>
               ))}
             </ul>
           </li>

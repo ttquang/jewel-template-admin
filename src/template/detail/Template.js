@@ -3,7 +3,6 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 import {v4 as uuid} from 'uuid';
 import TemplateInfo from "./TemplateInfo";
-import Parameter from "../../Parameter";
 import {Element} from "./Element";
 
 export function Template() {
@@ -41,7 +40,7 @@ export function Template() {
         ))}
       </ul>
       <button onClick={() => {
-        createTemplate(name, elements);
+        createTemplate(code, name, elements);
         navigate("/templates");
       }}>Save
       </button>
@@ -49,10 +48,11 @@ export function Template() {
   )
 }
 
-function createTemplate(name, elements) {
+function createTemplate(code, name, elements) {
   axios
-    .post('http://localhost:8080/templates', {
+    .put('http://localhost:8080/templates', {
       name: name,
+      code: code,
       elements: elements
     })
     .then((response) => {

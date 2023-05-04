@@ -2,6 +2,7 @@ import {v4 as uuid} from 'uuid';
 import Parameter from "./Parameter";
 import {useState} from "react";
 import axios from "axios";
+import {MenuItem, Select} from "@mui/material";
 
 export function Element({inElement}) {
   const [status, setStatus] = useState('');
@@ -31,10 +32,20 @@ export function Element({inElement}) {
 
   return (
     <>
-      <input
+      <Select
+        labelId="demo-simple-select-label"
+        id="demo-simple-select"
         value={element.type}
+        label="Age"
         onChange={e => handleTextChangedAsync(e.target.value)}
-      />
+      >
+        <MenuItem value={1}>Click</MenuItem>
+        <MenuItem value={2}>Input</MenuItem>
+      </Select>
+      {/*<input*/}
+      {/*  value={element.type}*/}
+      {/*  onChange={e => handleTextChangedAsync(e.target.value)}*/}
+      {/*/>*/}
       <ul>
         {element.parameters.map(parameter => (
           <li key={uuid()}>
@@ -47,3 +58,8 @@ export function Element({inElement}) {
     </>
   )
 }
+
+const options = [
+  {value: '1', label: 'Click'},
+  {value: '2', label: 'Input'}
+]
