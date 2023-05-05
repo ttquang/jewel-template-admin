@@ -24,7 +24,7 @@ export function Template() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const {data: response} = await axios.get('http://localhost:8080/templates/' + code);
+        const {data: response} = await axios.get('http://192.168.1.24:8080/templates/' + code);
         setName(response.name);
 
         dispatch({
@@ -67,7 +67,7 @@ export function Template() {
 
 function createTemplate(code, name, elements) {
   axios
-    .put('http://localhost:8080/templates', {
+    .put('http://192.168.1.24:8080/templates', {
       name: name,
       code: code,
       elements: elements

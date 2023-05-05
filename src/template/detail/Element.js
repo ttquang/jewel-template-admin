@@ -14,7 +14,7 @@ export function Element({element, templateCode}) {
     const fetchData = async () => {
       // setLoading(true);
       try {
-        const {data: response} = await axios.get('http://localhost:8080/templates');
+        const {data: response} = await axios.get('http://192.168.1.24:8080/templates');
         setTemplates(response);
       } catch (error) {
         console.error(error.message);
@@ -28,7 +28,7 @@ export function Element({element, templateCode}) {
   async function handleTextChangedAsync(text) {
     if (text) {
       await axios
-        .get("http://localhost:8080/templates/" + text + "/parameters")
+        .get("http://192.168.1.24:8080/templates/" + text + "/parameters")
         .then((response) => {
           let parameters = response.data;
           parameters = parameters.map(parameter => {

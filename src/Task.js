@@ -9,7 +9,7 @@ export default function Task({task}) {
   async function handleTextChangedAsync(text) {
     if (text) {
       await axios
-        .get("http://localhost:8080/templates/" + text + "/parameters")
+        .get("http://192.168.1.24:8080/templates/" + text + "/parameters")
         .then((response) => {
           let parameters = response.data;
           parameters = parameters.map(parameter => {

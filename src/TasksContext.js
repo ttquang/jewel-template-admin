@@ -32,7 +32,7 @@ export function useTasksDispatch() {
 
 function updateTemplate(name, tasks) {
   axios
-    .post('http://localhost:8080/templates', {
+    .post('http://192.168.1.24:8080/templates', {
       name: name,
       elements: tasks
     })
