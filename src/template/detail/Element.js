@@ -1,18 +1,20 @@
 import {v4 as uuid} from 'uuid';
 import Parameter from "./Parameter";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import axios from "axios";
-import {Button, MenuItem, Select} from "@mui/material";
+import {Accordion, AccordionDetails, AccordionSummary, MenuItem, Select} from "@mui/material";
+import {ElementsDispatchContext} from "./Template";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-export function Element({inElement, handleSave}) {
-  const [element, setElement] = useState(inElement);
+export function Element({element, templateCode}) {
+  const elementsDispatch = useContext(ElementsDispatchContext);
   const [templates, setTemplates] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       // setLoading(true);
       try {
-        const {data: response} = await axios.get('http://192.168.1.24:8080/templates');
+        const {data: response} = await axios.get('http://localhost:8080/templates');
         setTemplates(response);
       } catch (error) {
         console.error(error.message);
@@ -26,7 +28,7 @@ export function Element({inElement, handleSave}) {
   async function handleTextChangedAsync(text) {
     if (text) {
       await axios
-        .get("http://192.168.1.24:8080/templates/" + text + "/parameters")
+        .get("http://localhost:8080/templates/" + text + "/parameters")
         .then((response) => {
           let parameters = response.data;
           parameters = parameters.map(parameter => {
@@ -35,63 +37,98 @@ export function Element({inElement, handleSave}) {
               name: parameter
             }
           });
-          setElement({id: element.id, type: text, parameters: parameters});
+          elementsDispatch({
+            type: 'element-update',
+            element: {id: element.id, type: text, parameters: parameters}
+          });
+          // setElement({id: element.id, type: text, parameters: parameters});
         }).catch((reason) => {
           console.log(reason)
-          setElement({type: text, parameters: []});
+          elementsDispatch({
+            type: 'element-update',
+            element: {id: element.id, type: text, parameters: []}
+          });
         });
     } else {
-      setElement({type: text, parameters: []});
+      elementsDispatch({
+        type: 'element-update',
+        element: {id: element.id, type: text, parameters: []}
+      });
     }
   }
 
   function handleParameterChanged(name, e) {
     let parameters = element.parameters.map(p => {
       if (p.name === name) {
-        return {...p, value: e.target.value};
+        return {...p, id: uuid(), value: e.target.value};
       } else {
-        return p;
+        return {...p, id: uuid()};
       }
     });
-    setElement({...element, parameters: parameters});
+    let newElement = {...element, parameters: parameters};
+    elementsDispatch({
+      type: 'element-update',
+      element: newElement
+    });
   }
 
-  function handleSaveElement(e) {
-    handleSave(element);
-  }
+  // function handleParameterChanged(name, e) {
+  //   let parameters = element.parameters.map(p => {
+  //     if (p.name === name) {
+  //       return {...p, value: e.target.value};
+  //     } else {
+  //       return p;
+  //     }
+  //   });
+  //   setElement({...element, parameters: parameters});
+  // }
+  //
+  // function handleSaveElement(e) {
+  //   handleSave(element);
+  // }
 
   return (
     <>
-      <Select
-        size={"small"}
-        labelId="demo-simple-select-label"
-        id="demo-simple-select"
-        value={element.type}
-        onChange={e => handleTextChangedAsync(e.target.value)}
-      >
-        {templates.map(template => (
-          <MenuItem key={template.code} value={template.code}>
-            {template.name}
-          </MenuItem>
-        ))}
-        {/*<MenuItem value={1}>Click</MenuItem>*/}
-        {/*<MenuItem value={2}>Input</MenuItem>*/}
-      </Select>
-      <Button size={"small"} variant="contained" onClick={e => handleSaveElement(e)}>Save</Button>
+      <Accordion key={element.id}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1a-content"
+          id="panel1a-header"
+        >
+          <Select
+            size={"small"}
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={element.type}
+            onChange={e => handleTextChangedAsync(e.target.value)}
+          >
+            {templates.map(template => (
+              <MenuItem key={template.code} value={template.code}>
+                {template.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </AccordionSummary>
+        <AccordionDetails>
+          <ul>
+            {element.parameters.map(parameter => (
+              <li key={uuid()}>
+                <Parameter parameter={parameter}
+                           handleOnChange={(e) => handleParameterChanged(parameter.name, e)}
+                />
+              </li>
+            ))}
+          </ul>
+        </AccordionDetails>
+      </Accordion>
+
+      {/*<Button size={"small"} variant="contained" onClick={e => handleSaveElement(e)}>Save</Button>*/}
       {/*<Button variant="contained" onClick={handleAdd}>Add</Button>*/}
       {/*<input*/}
       {/*  value={element.type}*/}
       {/*  onChange={e => handleTextChangedAsync(e.target.value)}*/}
       {/*/>*/}
-      <ul>
-        {element.parameters.map(parameter => (
-          <li key={uuid()}>
-            <Parameter parameter={parameter}
-                       handleOnChange={e => handleParameterChanged(parameter.name, e)}
-            />
-          </li>
-        ))}
-      </ul>
+
     </>
   )
 }
